@@ -1,5 +1,6 @@
 import tkinter as tk
 from tkinter import messagebox
+import bcrypt
 
 # Function to check login credentials
 def check_credentials(username, password):
@@ -7,9 +8,13 @@ def check_credentials(username, password):
         with open('credentials.txt', 'r') as file:
             credentials = file.readlines()
         for credential in credentials:
-            stored_username, stored_password = credential.strip().split(',')
-            if stored_username == username and stored_password == password:
-                return True
+            stored_username, stored_hashed_password = credential.strip().split(',')
+            # First check whether the username matches a username/password pair
+            if stored_username == username:
+                # Then check whether the password matches the password in the username/password pair
+                # Hash the password supplied and compare it to the stored hashed password to check if they match
+                # This returns a True or False value  
+                return bcrypt.checkpw(password.encode('utf-8'), stored_hashed_password.encode('utf-8'))
         return False
     except FileNotFoundError:
         return False
@@ -34,8 +39,11 @@ def register():
         new_username = new_username_entry.get()
         new_password = new_password_entry.get()
         if admin_key == "admin_passkey":  # Replace "admin_passkey" with your actual admin passkey
+            # Hash the password with salt
+            new_hashed_password = bcrypt.hashpw(new_password.encode('utf-8'), bcrypt.gensalt())
+            # Store the username and hashed password
             with open('credentials.txt', 'a') as file:
-                file.write(f"{new_username},{new_password}\n")
+                file.write(f"{new_username},{new_hashed_password.decode('utf-8')}\n")
             messagebox.showinfo("Registration Success", "User registered successfully!")
             registration_window.destroy()
         else:
