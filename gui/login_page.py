@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import messagebox
 import bcrypt
+import subprocess
 
 # Function to check login credentials
 def check_credentials(username, password):
@@ -26,6 +27,7 @@ def login():
     if check_credentials(username, password):
         messagebox.showinfo("Login Success", "Welcome!")
         root.destroy()
+        subprocess.run(["python", "./page_one.py"])  # Replace with your main application file
     else:
         messagebox.showerror("Login Failed", "Invalid username or password. Please try again.")
 
