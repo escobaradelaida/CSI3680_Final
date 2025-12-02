@@ -7,17 +7,20 @@ import os
 
 CREDENTIALS_FILE = "credentials.txt"
 
-# ----------------- Helper Functions -----------------
+# this function will use bcrypt to hash the user's passwords for more security
 def hash_password(password: str) -> str:
     salt = bcrypt.gensalt()
     hashed = bcrypt.hashpw(password.encode(), salt)
     return hashed.decode()
 
+# this will save credentials to the credentials.txt file
 def save_credentials(username: str, password: str, filename=CREDENTIALS_FILE):
     hashed_pw = hash_password(password)
     with open(filename, "a") as f:
         f.write(f"{username}:{hashed_pw}\n")
 
+# this function will read the user input and see if it matches with the 
+# noted credentials in the credentials.txt file with the hash
 def verify_credentials(username: str, password: str, filename=CREDENTIALS_FILE) -> bool:
     try:
         with open(filename, "r") as f:
@@ -33,7 +36,10 @@ def verify_credentials(username: str, password: str, filename=CREDENTIALS_FILE) 
         return False
     return False
 
-# ----------------- Pages -----------------
+# ---this is the major page that first opens.
+# it contains the login and sign up fields 
+# uses tkinter elements to hold the fields in place
+# may be updated
 class LoginPage(tk.Frame):
     def __init__(self, parent, controller):
         super().__init__(parent, bg="lightgray")
@@ -56,6 +62,7 @@ class LoginPage(tk.Frame):
 
         form_frame.tkraise()
 
+    # check if the credentials are right, if true, go to page one
     def login(self):
         username = self.username_entry.get()
         password = self.password_entry.get()
@@ -65,6 +72,8 @@ class LoginPage(tk.Frame):
         else:
             messagebox.showerror("Error", "Invalid username or password.")
 
+# this is the sign up page.
+# contains user and password field
 
 class SignUpPage(tk.Frame):
     def __init__(self, parent, controller):
@@ -88,6 +97,7 @@ class SignUpPage(tk.Frame):
 
         form_frame.tkraise()
 
+# this will use the save_credentials to write to the xredentials.txt file
     def register(self):
         username = self.username_entry.get()
         password = self.password_entry.get()
@@ -98,7 +108,8 @@ class SignUpPage(tk.Frame):
         else:
             messagebox.showerror("Error", "Please enter both username and password.")
 
-
+# when login is successful
+# bring up the Start Page which gives user option for encryption page or decryption page
 class StartPage(tk.Frame):
     def __init__(self, parent, controller):
         super().__init__(parent, bg="lightgray")
