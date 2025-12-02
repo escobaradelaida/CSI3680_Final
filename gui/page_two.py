@@ -83,6 +83,9 @@ class DecryptPage(tk.Frame):
             messagebox.showerror("Error", "Incorrect PIN!")
             return
 
+        # This will show the image of the file AFTER it has been decrypted
+        # it will be size fixed but it will download to its proper dimensions
+        # ...as far as a i can tell
         decrypted_filename = self.decrypt_file(self.selected_encrypted_file, self.selected_key_file)
         if decrypted_filename:
             self.decrypted_label.config(text=f"Decrypted: {decrypted_filename}")
@@ -96,6 +99,9 @@ class DecryptPage(tk.Frame):
         else:
             messagebox.showerror("Error", "Decryption failed.")
 
+    # save the decryption file to the file explorer and use extension
+    # _decrypted.png
+    # converts image type to png 
     def decrypt_file(self, encrypted_file, key_file):
         try:
             with open(key_file, "rb") as f:
@@ -112,6 +118,7 @@ class DecryptPage(tk.Frame):
             print(f"Error decrypting file: {e}")
             return None
 
+# works in conjunction with download button to download the image onto user device
     def download_image(self):
         if not self.decrypted_filename:
             messagebox.showwarning("Warning", "No decrypted file to save.")

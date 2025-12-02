@@ -128,7 +128,7 @@ class StartPage(tk.Frame):
 
         form_frame.tkraise()
 
-
+# this page will have a bg img with major buttons
 class EncryptPage(tk.Frame):
     def __init__(self, parent, controller):
         super().__init__(parent)
@@ -160,17 +160,21 @@ class EncryptPage(tk.Frame):
 
         form_frame.tkraise()
 
+# hopefully resizes the bg img if the user resizes the app border
     def resize_bg(self, event):
         resized = self.original_bg.resize((event.width, event.height), Image.LANCZOS)
         self.bg_photo = ImageTk.PhotoImage(resized)
         self.bg_label.config(image=self.bg_photo)
 
+# this function will take the img the user uploaded and encrypt it using fernet package
+# it will then save the encrpyted file onto the device
     def import_file(self):
         filename = filedialog.askopenfilename(title="Select a file", filetypes=[("All Files", "*.*")])
         if filename:
             self.selected_file = filename
             self.selected_label.config(text=f"Selected file: {filename}")
             try:
+                # user can see the image uploaded as a preview
                 if filename.endswith(".encrypted"):
                     selected_image = Image.open("assets/nopreview.png").resize((400, 300), Image.LANCZOS)
                 else:
@@ -185,6 +189,8 @@ class EncryptPage(tk.Frame):
             messagebox.showerror("Error", "No file selected!")
             return
 
+        # based on cryptography pkg doc, this generates the encrpytion key
+        # encrypt img data and save the key with .key extension
         key = Fernet.generate_key()
         fernet = Fernet(key)
 
@@ -196,15 +202,18 @@ class EncryptPage(tk.Frame):
         with open(encrypted_file, "wb") as file:
             file.write(encrypted_data)
 
+        # save the image in file explorer
+        # defaults to the directory where the original image is from
         key_file = os.path.splitext(self.selected_file)[0] + "_key.key"
         with open(key_file, "wb") as file:
             file.write(key)
 
+# let user know of success
         self.file_label.config(text=f"File encrypted: {encrypted_file}")
         messagebox.showinfo("Success",
                             f"Encrypted file saved as {encrypted_file}\nKey saved as {key_file}")
 
-
+# similar to Encrypt page function
 class DecryptPage(tk.Frame):
     def __init__(self, parent, controller):
         super().__init__(parent)
@@ -239,9 +248,11 @@ class App(tk.Tk):
 
         self.frames = {}
 
+# this will import the functions from page_one and page_two
         from page_one import EncryptPage
         from page_two import DecryptPage
 
+        # classes here are deemed as "pages"
         pages = (LoginPage, SignUpPage, StartPage, EncryptPage, DecryptPage)
 
         for Page in pages:
